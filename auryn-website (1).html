@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auryn</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: rgba(15, 15, 15, 0.8);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #fff, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .nav-tabs {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+
+        .nav-tab {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            border: none;
+            background: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+        }
+
+        .nav-tab:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-actions {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .add-site-btn {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+
+        .add-site-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .settings-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .content-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .search-bar {
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            width: 250px;
+            transition: all 0.2s ease;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1);
+        }
+
+        .search-bar::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Sites Grid */
+        .sites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+        }
+
+        .site-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 12px;
+            position: relative;
+            min-height: 110px;
+            justify-content: center;
+        }
+
+        .site-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(168, 85, 247, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .site-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .site-icon img {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            object-fit: cover;
+        }
+
+        .site-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #fff;
+            line-height: 1.3;
+            word-break: break-word;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(239, 68, 68, 0.8);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            font-size: 10px;
+            opacity: 0;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .site-card:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 1);
+        }
+
+        /* Tools Grid */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .tool-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .tool-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(168, 85, 247, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .tool-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tool-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+        }
+
+        .tool-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .tool-description {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.4;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.5);
+            grid-column: 1 / -1;
+        }
+
+        .empty-state h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Stats */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #8b5cf6;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(20px);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: white;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+
+        .modal-btn.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .modal-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .app-container {
+                flex-direction: column;
+            }
+
+            .nav-tabs {
+                flex-direction: row;
+                overflow-x: auto;
+                margin-bottom: 20px;
+            }
+
+            .content-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+
+            .search-bar {
+                width: 100%;
+            }
+
+            .sites-grid,
+            .tools-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">Auryn</div>
+            
+            <nav class="nav-tabs">
+                <button class="nav-tab active" data-tab="sites">
+                    <div class="nav-icon">🌐</div>
+                    <span>Sites</span>
+                </button>
+                <button class="nav-tab" data-tab="tools">
+                    <div class="nav-icon">🛠️</div>
+                    <span>Tools</span>
+                </button>
+                <button class="nav-tab" data-tab="analytics">
+                    <div class="nav-icon">📊</div>
+                    <span>Analytics</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-actions">
+                <button class="action-btn add-site-btn" id="add-site-btn">
+                    <span>➕</span>
+                    <span>Add Site</span>
+                </button>
+                <button class="action-btn settings-btn">
+                    <span>⚙️</span>
+                    <span>Settings</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Sites Tab -->
+            <div id="sites-tab" class="tab-content">
+                <div class="content-header">
+                    <h1 class="content-title">My Sites</h1>
+                    <input type="text" class="search-bar" id="sites-search" placeholder="Search sites...">
+                </div>
+                
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-sites">0</div>
+                        <div class="stat-label">Total Sites</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="visits-today">0</div>
+                        <div class="stat-label">Visits Today</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="favorite-sites">0</div>
+                        <div class="stat-label">Favorites</div>
+                    </div>
+                </div>
+
+                <div id="sites-grid" class="sites-grid">
+                    <div id="empty-state" class="empty-state">
+                        <h3>No sites added yet</h3>
+                        <p>Click "Add Site" to get started.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tools Tab -->
+            <div id="tools-tab" class="tab-content hidden">
+                <div class="content-header">
+                    <h1 class="content-title">Tools</h1>
+                    <input type="text" class="search-bar" id="tools-search" placeholder="Search tools...">
+                </div>
+
+                <div class="tools-grid">
+                    <div class="tool-card" onclick="openTool('color-picker')">
+                        <div class="tool-header">
+                            <div class="tool-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">🎨</div>
+                            <div class="tool-title">Color Picker</div>
+                        </div>
+                        <div class="tool-description">Pick and generate color palettes for your projects</div>
+                    </div>
+
+                    <div class="tool-card" onclick="openTool('url-shortener')">
+                        <div class="tool-header">
+                            <div class="tool-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">🔗</div>
+                            <div class="tool-title">URL Shortener</div>
+                        </div>
+                        <div class="tool-description">Create short, shareable links from long URLs</div>
+                    </div>
+
+                    <div class="tool-card" onclick="openTool('qr-generator')">
+                        <div class="tool-header">
+                            <div class="tool-icon" style="background: linear-gradient(135deg, #10b981, #059669);">📱</div>
+                            <div class="tool-title">QR Generator</div>
+                        </div>
+                        <div class="tool-description">Generate QR codes for text, URLs, and more</div>
+                    </div>
+
+                    <div class="tool-card" onclick="openTool('password-generator')">
+                        <div class="tool-header">
+                            <div class="tool-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">🔐</div>
+                            <div class="tool-title">Password Generator</div>
+                        </div>
+                        <div class="tool-description">Generate secure passwords with custom options</div>
+                    </div>
+
+                    <div class="tool-card" onclick="openTool('base64-encoder')">
+                        <div class="tool-header">
+                            <div class="tool-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">🔢</div>
+                            <div class="tool-title">Base64 Encoder</div>
+                        </div>
+                        <div class="tool-description">Encode and decode Base64 strings</div>
+                    </div>
+
+                    <div class="tool-card" onclick="openTool('json-formatter')">
+                        <div class="tool-header">
+                            <div class="tool-icon" style="background: linear-gradient(135deg, #f97316, #ea580c);">📄</div>
+                            <div class="tool-title">JSON Formatter</div>
+                        </div>
+                        <div class="tool-description">Format and validate JSON data</div>
+                    </div>
+
+                    <div class="tool-card" onclick="openTool('hash-generator')">
+                        <div class="tool-header">
+                            <div class="tool-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">🔨</div>
+                            <div class="tool-title">Hash Generator</div>
+                        </div>
+                        <div class="tool-description">Generate MD5, SHA1, SHA256 hashes</div>
+                    </div>
+
+                    <div class="tool-card" onclick="openTool('unit-converter')">
+                        <div class="tool-header">
+                            <div class="tool-icon" style="background: linear-gradient(135deg, #84cc16, #65a30d);">📏</div>
+                            <div class="tool-title">Unit Converter</div>
+                        </div>
+                        <div class="tool-description">Convert between different units of measurement</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analytics-tab" class="tab-content hidden">
+                <div class="content-header">
+                    <h1 class="content-title">Analytics</h1>
+                </div>
+                
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-number">147</div>
+                        <div class="stat-label">Total Clicks</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">23</div>
+                        <div class="stat-label">This Week</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">5.2</div>
+                        <div class="stat-label">Avg Daily</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">Most Popular</div>
+                    </div>
+                </div>
+
+                <div class="empty-state">
+                    <h3>Analytics Dashboard</h3>
+                    <p>Track your site usage and discover insights about your browsing habits.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal">
+            <h2>Add New Site</h2>
+            <form id="site-form">
+                <div class="form-group">
+                    <label for="site-name">Site Name</label>
+                    <input type="text" id="site-name" placeholder="Enter site name..." required>
+                </div>
+                <div class="form-group">
+                    <label for="site-url">Site URL</label>
+                    <input type="url" id="site-url" placeholder="https://example.com" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn secondary" id="cancel-btn">Cancel</button>
+                    <button type="submit" class="modal-btn primary">Add Site</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let sites = [];
+        let currentTab = 'sites';
+        let visitCounts = {};
+
+        function getFaviconUrl(url) {
+            try {
+                const domain = new URL(url).hostname;
+                return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+            } catch {
+                return null;
+            }
+        }
+
+        function getInitials(name) {
+            return name.split(' ').map(word => word[0]).join('').substring(0, 2).toUpperCase();
+        }
+
+        function updateStats() {
+            document.getElementById('total-sites').textContent = sites.length;
+            document.getElementById('visits-today').textContent = Object.values(visitCounts).reduce((a, b) => a + b, 0);
+            document.getElementById('favorite-sites').textContent = sites.filter(site => site.favorite).length;
+        }
+
+        function loadSites() {
+            const sitesGrid = document.getElementById('sites-grid');
+            const emptyState = document.getElementById('empty-state');
+            const searchTerm = document.getElementById('sites-search').value.toLowerCase();
+            
+            sitesGrid.innerHTML = '';
+            
+            const filteredSites = sites.filter(site => 
+                site.name.toLowerCase().includes(searchTerm) || 
+                site.url.toLowerCase().includes(searchTerm)
+            );
+            
+            if (filteredSites.length === 0) {
+                sitesGrid.appendChild(emptyState);
+            } else {
+                filteredSites.forEach((site, index) => {
+                    const originalIndex = sites.indexOf(site);
+                    const siteCard = document.createElement('div');
+                    siteCard.className = 'site-card';
+                    siteCard.onclick = () => visitSite(site.url, originalIndex);
+                    
+                    const faviconUrl = getFaviconUrl(site.url);
+                    const iconHtml = faviconUrl 
+                        ? `<img src="${faviconUrl}" alt="${site.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`
+                        : '';
+                    
+                    siteCard.innerHTML = `
+                        <div class="site-icon">
+                            ${iconHtml}
+                            <div style="display: ${faviconUrl ? 'none' : 'flex'}; align-items: center; justify-content: center; width: 100%; height: 100%; font-size: 11px; font-weight: 600;">${getInitials(site.name)}</div>
+                        </div>
+                        <div class="site-name">${site.name}</div>
+                        <button class="delete-btn" onclick="event.stopPropagation(); deleteSite(${originalIndex})" title="Delete site">×</button>
+                    `;
+                    sitesGrid.appendChild(siteCard);
+                });
+            }
+            updateStats();
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.remove('hidden');
+            currentTab = tabName;
+        }
+
+        function openModal() {
+            const modal = document.getElementById('modal-overlay');
+            modal.classList.add('active');
+            document.getElementById('site-name').focus();
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal-overlay');
+            modal.classList.remove('active');
+            document.getElementById('site-form').reset();
+        }
+
+        function addSite(name, url) {
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+            }
+            
+            sites.push({ name, url, favorite: false, dateAdded: new Date() });
+            visitCounts[sites.length - 1] = 0;
+            loadSites();
+            closeModal();
+        }
+
+        function visitSite(url, index) {
+            visitCounts[index] = (visitCounts[index] || 0) + 1;
+            updateStats();
+            window.open(url, '_blank');
+        }
+
+        function deleteSite(index) {
+            if (confirm('Are you sure you want to delete this site?')) {
+                sites.splice(index, 1);
+                delete visitCounts[index];
+                loadSites();
+            }
+        }
+
+        function openTool(toolName) {
+            alert(`${toolName} tool would open here. This is a demo.`);
+        }
+
+        // Event listeners
+        document.getElementById('add-site-btn').addEventListener('click', openModal);
+        document.getElementById('cancel-btn').addEventListener('click', closeModal);
+
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                switchTab(tab.dataset.tab);
+            });
+        });
+
+        document.getElementById('sites-search').addEventListener('input', loadSites);
+
+        document.getElementById('site-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('site-name').value.trim();
+            const url = document.getElementById('site-url').value.trim();
+            
+            if (name && url) {
+                addSite(name, url);
+            }
+        });
+
+        document.getElementById('modal-overlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Initialize
+        loadSites();
+    </script>
+</body>
+</html>
